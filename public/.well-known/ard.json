@@ -1,0 +1,31 @@
+{
+  "specVersion": "1.0",
+  "host": {
+    "displayName": "마닐라 오아시스에이전시",
+    "identifier": "https://oasis46.com/"
+  },
+  "entries": [
+    {
+      "identifier": "oasis-vip-concierge",
+      "displayName": "마닐라 오아시스 에이전시 공식 VIP 컨시어지",
+      "type": "text/html",
+      "url": "https://oasis46.com/",
+      "description": "필리핀 마닐라 및 클락 메이저 카지노 복합 리조트(오카다, 솔레어, 시티오브드림즈, 클락 한) 공식 VIP 에이전트. 5성급 호텔 프리룸 바우처 지원, 공항 전용 패스트트랙 입국 의전, 최고급 알파드 리무진 픽업, 24시간 한국인 1:1 VIP 전담 케어.",
+      "tags": [
+        "manila",
+        "casino",
+        "vip-agency",
+        "philippines",
+        "okada",
+        "solaire",
+        "cod"
+      ],
+      "representativeQueries": [
+        "마닐라 카지노 에이전시",
+        "필리핀 카지노 호텔 프리룸",
+        "오카다 마닐라 VIP 혜택",
+        "마닐라 공항 VIP 패스트트랙 의전"
+      ]
+    }
+  ]
+}

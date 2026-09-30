@@ -1,0 +1,43 @@
+User-agent: *
+Allow: /
+Allow: /*?post=*
+Allow: /favicon.ico
+Allow: /favicon*.png
+Allow: /favicon.svg
+Allow: /*.ico
+Allow: /*.png
+
+User-agent: Googlebot
+Allow: /
+Allow: /*?post=*
+
+User-agent: Googlebot-Favicon
+Allow: /
+Allow: /favicon.ico
+Allow: /favicon*.png
+Allow: /favicon.svg
+Allow: /*.ico
+Allow: /*.png
+Allow: /*.svg
+
+User-agent: Googlebot-Image
+Allow: /
+Allow: /*.jpg
+Allow: /*.jpeg
+Allow: /*.png
+Allow: /*.webp
+Allow: /*.svg
+
+User-agent: Yeti
+Allow: /
+Allow: /*?post=*
+
+User-agent: NaverBot
+Allow: /
+Allow: /*?post=*
+
+User-agent: Daumoa
+Allow: /
+Allow: /*?post=*
+
+Sitemap: https://oasis46.com/sitemap.xml
