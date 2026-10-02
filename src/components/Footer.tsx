@@ -5,7 +5,7 @@ export const Footer: React.FC = () => {
   const { siteConfig, setIsAdminOpen } = useSite();
 
   return (
-    <footer className="bg-slate-950 text-slate-300 py-6 border-t border-slate-800/80" id="site-footer">
+    <footer className="bg-black text-neutral-300 py-6 border-t border-neutral-800/80" id="site-footer">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-slate-300 font-medium text-center sm:text-left">
           {/* Copyright & Essential Info */}

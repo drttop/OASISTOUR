@@ -378,7 +378,7 @@ export const AdminDashboard: React.FC = () => {
             }`}
           >
             <Compass className="w-4 h-4" />
-            VIP 서비스 카드 ({philippineSpots.length})
+            투어서비스 관리 ({philippineSpots.length})
           </button>
           <button
             onClick={() => setActiveTab('process')}
@@ -522,7 +522,7 @@ export const AdminDashboard: React.FC = () => {
                       <div className="flex items-center gap-4">
                         <div className="w-48 h-16 rounded-xl bg-slate-950 border border-slate-700 p-2 flex items-center justify-center overflow-hidden">
                           <img
-                            src={siteConfig.headerLogo || "/images/oasis_header_logo.webp"}
+                            src={siteConfig.headerLogo || "/images/user_header_logo.webp"}
                             alt="Logo Preview"
                             className="max-w-full max-h-full object-contain"
                           />
@@ -536,8 +536,14 @@ export const AdminDashboard: React.FC = () => {
                               if (file) {
                                 const reader = new FileReader();
                                 reader.onloadend = () => {
-                                  updateSiteConfig({ headerLogo: reader.result as string });
-                                  showToast('로고 이미지가 성공적으로 적용되었습니다.');
+                                  const dataUrl = reader.result as string;
+                                  if (typeof window !== 'undefined') {
+                                    try {
+                                      localStorage.setItem('oasis_custom_header_logo', dataUrl);
+                                    } catch {}
+                                  }
+                                  updateSiteConfig({ headerLogo: dataUrl });
+                                  showToast('로고 이미지가 성공적으로 적용되었습니다. (영구 보존)');
                                 };
                                 reader.readAsDataURL(file);
                               }
@@ -548,15 +554,28 @@ export const AdminDashboard: React.FC = () => {
                             type="text"
                             placeholder="또는 이미지 URL 직접 입력 (https://...)"
                             value={siteConfig.headerLogo?.startsWith('data:') ? '' : (siteConfig.headerLogo || '')}
-                            onChange={(e) => updateSiteConfig({ headerLogo: e.target.value })}
+                            onChange={(e) => {
+                              const val = e.target.value;
+                              if (typeof window !== 'undefined' && val) {
+                                try {
+                                  localStorage.setItem('oasis_custom_header_logo', val);
+                                } catch {}
+                              }
+                              updateSiteConfig({ headerLogo: val });
+                            }}
                             className="w-full px-3 py-1.5 text-xs border border-slate-300 rounded focus:ring-2 focus:ring-[#30308A]"
                           />
                         </div>
-                        {siteConfig.headerLogo && siteConfig.headerLogo !== '/images/oasis_header_logo.webp' && (
+                        {siteConfig.headerLogo && siteConfig.headerLogo !== '/images/user_header_logo.webp' && (
                           <button
                             onClick={() => {
-                              updateSiteConfig({ headerLogo: '/images/oasis_header_logo.webp' });
-                              showToast('기본 공식 골드 로고로 복원되었습니다.');
+                              if (typeof window !== 'undefined') {
+                                try {
+                                  localStorage.removeItem('oasis_custom_header_logo');
+                                } catch {}
+                              }
+                              updateSiteConfig({ headerLogo: '/images/user_header_logo.webp' });
+                              showToast('기본 공식 로고로 복원되었습니다.');
                             }}
                             className="px-3 py-2 bg-red-50 text-red-500 rounded-lg text-xs font-bold hover:bg-red-100 transition-colors whitespace-nowrap"
                           >
@@ -583,28 +602,28 @@ export const AdminDashboard: React.FC = () => {
                         />
                       </div>
                       <div>
-                        <span className="text-[10px] text-slate-500 block mb-1">메뉴 2 (VIP 서비스)</span>
+                        <span className="text-[10px] text-slate-500 block mb-1">메뉴 2 (투어서비스)</span>
                         <input
                           type="text"
-                          value={siteConfig.navMenu3 || 'VIP 서비스'}
+                          value={siteConfig.navMenu3 || '투어서비스'}
                           onChange={(e) => updateSiteConfig({ navMenu3: e.target.value })}
                           className="w-full px-3 py-1.5 text-xs border border-slate-300 rounded focus:ring-2 focus:ring-[#30308A]"
                         />
                       </div>
                       <div>
-                        <span className="text-[10px] text-slate-500 block mb-1">메뉴 3 (카지노 서비스)</span>
+                        <span className="text-[10px] text-slate-500 block mb-1">메뉴 3 (투어지역)</span>
                         <input
                           type="text"
-                          value={siteConfig.navMenu2 || '카지노 서비스'}
+                          value={siteConfig.navMenu2 || '투어지역'}
                           onChange={(e) => updateSiteConfig({ navMenu2: e.target.value })}
                           className="w-full px-3 py-1.5 text-xs border border-slate-300 rounded focus:ring-2 focus:ring-[#30308A]"
                         />
                       </div>
                       <div>
-                        <span className="text-[10px] text-slate-500 block mb-1">메뉴 4 (프로모션)</span>
+                        <span className="text-[10px] text-slate-500 block mb-1">메뉴 4 (상담예약)</span>
                         <input
                           type="text"
-                          value={siteConfig.navMenu4 || '프로모션'}
+                          value={siteConfig.navMenu4 || '상담예약'}
                           onChange={(e) => updateSiteConfig({ navMenu4: e.target.value })}
                           className="w-full px-3 py-1.5 text-xs border border-slate-300 rounded focus:ring-2 focus:ring-[#30308A]"
                         />
@@ -1669,7 +1688,7 @@ Sitemap: https://oasis46.com/sitemap.xml`}
               <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm space-y-4">
                 <h3 className="text-base font-bold text-slate-900 flex items-center gap-2 border-b border-slate-100 pb-3">
                   <Compass className="w-4 h-4 text-[#30308A]" />
-                  VIP 서비스 섹션 메인 타이틀 및 소개글 직접 수정
+                  투어서비스 섹션 메인 타이틀 및 소개글 직접 수정
                 </h3>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -1677,9 +1696,9 @@ Sitemap: https://oasis46.com/sitemap.xml`}
                     <label className="block text-xs font-bold text-slate-700 mb-1">상단 영문 배지 문구</label>
                     <input
                       type="text"
-                      value={siteConfig.philippinesBadge || 'OASIS VIP SERVICE & CARE'}
+                      value={siteConfig.philippinesBadge || 'OASIS VIP TOUR SERVICE'}
                       onChange={(e) => updateSiteConfig({ philippinesBadge: e.target.value })}
-                      placeholder="OASIS VIP SERVICE & CARE"
+                      placeholder="OASIS VIP TOUR SERVICE"
                       className="w-full px-3.5 py-2 text-xs border border-slate-300 rounded-lg"
                     />
                   </div>
@@ -1688,9 +1707,9 @@ Sitemap: https://oasis46.com/sitemap.xml`}
                     <label className="block text-xs font-bold text-slate-700 mb-1">메인 타이틀 (Heading)</label>
                     <input
                       type="text"
-                      value={siteConfig.philippinesTitle || '오아시스 VIP 서비스'}
+                      value={siteConfig.philippinesTitle || '오아시스 투어서비스'}
                       onChange={(e) => updateSiteConfig({ philippinesTitle: e.target.value })}
-                      placeholder="오아시스 VIP 서비스"
+                      placeholder="오아시스 투어서비스"
                       className="w-full px-3.5 py-2 text-xs border border-slate-300 rounded-lg font-bold"
                     />
                   </div>
@@ -1703,7 +1722,7 @@ Sitemap: https://oasis46.com/sitemap.xml`}
                       rows={3}
                       value={siteConfig.philippinesSubtitle || ''}
                       onChange={(e) => updateSiteConfig({ philippinesSubtitle: e.target.value })}
-                      placeholder="최고급 호텔 프리룸부터 전용 의전 세단, 명문 골프 및 24시간 프라이빗 케어까지,\n오아시스 VIP 회원님만을 위한 특별한 서비스를 제공합니다."
+                      placeholder="최고급 호텔 프리룸부터 전용 의전 세단, 명문 골프 및 24시간 프라이빗 케어까지,\n오아시스 VIP 회원님만을 위한 특별한 맞춤 투어 서비스를 제공합니다."
                       className="w-full px-3.5 py-2 text-xs border border-slate-300 rounded-lg resize-y"
                     />
                   </div>
@@ -1713,10 +1732,10 @@ Sitemap: https://oasis46.com/sitemap.xml`}
               <div className="flex justify-between items-center">
                 <div>
                   <h3 className="text-base font-bold text-slate-900">
-                    VIP 서비스 카드 리스트 ({philippineSpots.length}개)
+                    투어서비스 카드 리스트 ({philippineSpots.length}개)
                   </h3>
                   <p className="text-xs text-slate-500">
-                    호텔, 의전, 골프, 다이닝 등 오아시스 VIP 서비스 카드를 직접 추가, 수정, 삭제할 수 있습니다.
+                    호텔, 의전, 골프, 다이닝 등 오아시스 투어서비스 카드를 직접 추가, 수정, 삭제할 수 있습니다.
                   </p>
                 </div>
                 <button
@@ -1727,7 +1746,7 @@ Sitemap: https://oasis46.com/sitemap.xml`}
                   className="px-4 py-2 bg-[#30308A] hover:bg-[#25256e] text-white rounded-xl text-xs font-bold flex items-center gap-1.5 shadow cursor-pointer"
                 >
                   <Plus className="w-4 h-4" />
-                  <span>새 VIP 서비스 카드 추가</span>
+                  <span>새 투어서비스 카드 추가</span>
                 </button>
               </div>
 
@@ -1745,15 +1764,15 @@ Sitemap: https://oasis46.com/sitemap.xml`}
                     />
                     <div className="flex-1 flex flex-col justify-between">
                       <div>
-                        <div className="flex items-center gap-1.5">
+                        <div className="flex items-center gap-1.5 mb-1">
                           <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-[#1E1E4F] text-[#E5B54F]">
                             {spot.location}
                           </span>
-                          <span className="text-xs font-bold text-slate-900 truncate">
-                            {spot.title}
-                          </span>
                         </div>
-                        <p className="text-[11px] text-slate-500 truncate mt-0.5">
+                        <h4 className="text-xs sm:text-sm font-extrabold text-slate-900 leading-snug">
+                          {spot.title}
+                        </h4>
+                        <p className="text-[11px] font-bold text-[#b8860b] mt-0.5">
                           {spot.subtitle}
                         </p>
                         <p className="text-[11px] text-slate-600 line-clamp-2 mt-1">
@@ -1776,13 +1795,13 @@ Sitemap: https://oasis46.com/sitemap.xml`}
                           onClick={() => {
                             setConfirmModal({
                               isOpen: true,
-                              title: 'VIP 서비스 카드 삭제',
-                              message: `'${spot.title}' VIP 서비스 카드를 삭제하시겠습니까?`,
+                              title: '투어서비스 카드 삭제',
+                              message: `'${spot.title}' 투어서비스 카드를 삭제하시겠습니까?`,
                               confirmText: '삭제',
                               confirmColor: 'bg-red-600 hover:bg-red-700',
                               onConfirm: () => {
                                 deletePhilippineSpot(spot.id);
-                                showToast('VIP 서비스 카드가 삭제되었습니다.');
+                                showToast('투어서비스 카드가 삭제되었습니다.');
                               },
                             });
                           }}
@@ -1978,14 +1997,14 @@ Sitemap: https://oasis46.com/sitemap.xml`}
               <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm space-y-4">
                 <h3 className="text-base font-bold text-slate-900 flex items-center gap-2 border-b border-slate-100 pb-3">
                   <Sparkles className="w-4 h-4 text-[#E5B54F]" />
-                  프로모션 섹션 타이틀 및 문구 관리
+                  상담예약 섹션 타이틀 및 문구 관리
                 </h3>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-xs font-bold text-slate-700 mb-1">프로모션 섹션 메인 타이틀</label>
+                    <label className="block text-xs font-bold text-slate-700 mb-1">상담예약 섹션 메인 타이틀</label>
                     <input
                       type="text"
-                      value={siteConfig.promotionTitle || '오아시스 VIP 특별 프로모션'}
+                      value={siteConfig.promotionTitle || '24시간 1:1 VIP 실시간 상담 및 예약'}
                       onChange={(e) => updateSiteConfig({ promotionTitle: e.target.value })}
                       className="w-full px-3.5 py-2 text-xs border border-slate-300 rounded-lg font-bold"
                     />
@@ -1994,16 +2013,16 @@ Sitemap: https://oasis46.com/sitemap.xml`}
                     <label className="block text-xs font-bold text-slate-700 mb-1">상단 배지 영문 텍스트</label>
                     <input
                       type="text"
-                      value={siteConfig.promotionBadge || 'EXCLUSIVE PROMOTIONS & EVENTS'}
+                      value={siteConfig.promotionBadge || '24/7 PRIVATE VIP RESERVATION'}
                       onChange={(e) => updateSiteConfig({ promotionBadge: e.target.value })}
                       className="w-full px-3.5 py-2 text-xs border border-slate-300 rounded-lg"
                     />
                   </div>
                   <div className="sm:col-span-2">
-                    <label className="block text-xs font-bold text-slate-700 mb-1">프로모션 섹션 서브 설명문</label>
+                    <label className="block text-xs font-bold text-slate-700 mb-1">상담예약 섹션 서브 설명문</label>
                     <textarea
                       rows={2}
-                      value={siteConfig.promotionSubtitle || '특급 호텔 스위트룸 무료 숙박 바우처, 항공권 페이백, 롤링 1.5% 정산 등 오아시스 VIP 회원님만의 한정 혜택을 확인하세요.'}
+                      value={siteConfig.promotionSubtitle || '마닐라 & 클락 최고급 5성급 호텔 프리룸 바우처, 공항 VIP 단독 의전, 롤링 1.5% 우대 혜택을 24시간 실시간 전담 매니저가 비공개로 즉시 안내해 드립니다.'}
                       onChange={(e) => updateSiteConfig({ promotionSubtitle: e.target.value })}
                       className="w-full px-3.5 py-2 text-xs border border-slate-300 rounded-lg resize-y"
                     />

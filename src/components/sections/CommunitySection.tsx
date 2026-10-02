@@ -24,9 +24,9 @@ export const CommunitySection: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [currentPage, setCurrentPage] = useState<number>(1);
 
-  // Exclude '공지사항' and '프로모션' (프로모션 is in its own dedicated board)
+  // Include community, magazine, news, travel, and promotion posts (exclude only system notices)
   const communityPosts = posts.filter(
-    (post) => post.category !== '공지사항' && post.category !== '프로모션'
+    (post) => post.category !== '공지사항'
   );
 
   const filteredPosts = communityPosts.filter((post) => {
@@ -80,6 +80,7 @@ export const CommunitySection: React.FC = () => {
   };
 
   const categoryColorMap: Record<string, string> = {
+    프로모션: 'bg-amber-100 text-amber-900 border-amber-300 font-bold',
     커뮤니티: 'bg-blue-100 text-blue-900 border-blue-300 font-bold',
     VIP매거진: 'bg-purple-100 text-purple-900 border-purple-300 font-bold',
     카지노소식: 'bg-indigo-100 text-indigo-900 border-indigo-300 font-bold',

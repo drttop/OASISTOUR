@@ -5,9 +5,9 @@ export const initialSiteConfig: SiteConfig = {
   subTitle: 'OASIS OFFICIAL VIP AGENCY',
   pointColor: '#30308A',
   fontFamily: 'Pretendard',
-  kakaoId: 'oasis66',
+  kakaoId: 'OASIS66',
   kakaoUrl: 'https://open.kakao.com/o/pNldnRKi',
-  telegramId: '@oasis46',
+  telegramId: 'OASIS46',
   telegramUrl: 'https://t.me/oasis066',
   phoneNumber: '+63 917 123 4567 (현지) / 070-8098-7788 (인터넷전화)',
   email: 'vip@oasis-agent.com',
@@ -24,40 +24,40 @@ export const initialSiteConfig: SiteConfig = {
   adminPassword: 'oasis1234!',
 
   // About Oasis Section Config
-  aboutBadge: 'ABOUT OASIS',
-  aboutTitle: '필리핀 공인 13년 현지 직영 공식 에이전트\n',
-  aboutSubtitle: ' ',
-  aboutStoryHeading: '“필리핀 공식 에이전트”',
-  aboutStoryParagraph1: '오아시스 공식 에이전트는 필리핀의 각종 게임규제 정부부처의 규정을 준수하며 협력하고 있습니다. 13년간 필리핀 현지에서 직접 상주하며 단 한 건의 사고 없는 무결점 VIP 운영을 약속합니다.  필리핀 정부 게이밍 규제기관(PAGCOR), 필리핀 경기감독위원회(GAB), 필리핀 자선복권공사(PCSO)와의 공식 파트너십을 통해 \n법적 리스크 없는 100% 안전한 여정을 보장합니다.',
-  aboutStoryParagraph2: '단순한 중개를 넘어 마닐라(오카다, 솔레어, 시티오브드림즈) 및 클락(한 카지노, 디하이츠, 로이스) 현지 법인 인프라를 바탕으로, 공항 VIP 패스트트랙 입국부터 최고급 의전 차량, 5성급 스위트룸 무료 바우처, 전담 한국인 매니저의 24시간 현지 밀착 케어까지 원스톱으로 책임집니다.',
-  aboutStoryHighlight: ' 하단박스',
+  aboutBadge: 'ABOUT OASIS VIP AGENCY',
+  aboutTitle: 'PAGCOR · GAB · PCSO 필리핀 정부 3대 기관 공식 승인\n13년 무사고 현지 직영 VIP 공식 에이전시',
+  aboutSubtitle: '오아시스는 2011년 설립 이래 13년간 마닐라와 클락 현지에 직영 지사와 상주 전문팀을 두고, 법적 리스크 없는 100% 안전한 여정과 최고급 5성급 리조트 VIP 멤버십 케어를 제공합니다. 단순한 중개 업체를 넘어 고객님의 품격 있는 모든 순간을 완벽히 책임집니다.',
+  aboutStoryHeading: '“13년의 현지 운영 노하우, 타협 없는 신뢰와 원칙으로 완성합니다”',
+  aboutStoryParagraph1: '오아시스 공식 에이전트는 2011년 설립 이래 13년간 필리핀 현지에서 직접 상주하며 단 한 건의 금전 사고나 안전 사고 없는 무결점 VIP 운영을 고수해 왔습니다. 필리핀 정부 게이밍 규제기관(PAGCOR), 필리핀 경기감독위원회(GAB), 필리핀 자선복권공사(PCSO)와의 공식 파트너십을 통해 법적 리스크 없는 100% 안전하고 합법적인 여정을 약속합니다.',
+  aboutStoryParagraph2: '단순한 게임 테이블 안내를 넘어 마닐라(오카다, 솔레어, 시티오브드림즈, 뉴포트) 및 클락(한 카지노, 디하이츠, 로이스) 현지 법인 인프라를 바탕으로, 공항 VIP 패스트트랙 입국부터 최고급 의전 세단, 5성급 스위트룸 무료 바우처, 전담 한국인 베테랑 실장의 24시간 현지 밀착 케어까지 원스톱으로 책임집니다.',
+  aboutStoryHighlight: '■ 오아시스 4대 핵심 보증: ① PAGCOR·GAB·PCSO 정부 공인 정식 라이센스 | ② 13년 무사고 전산 정산 | ③ 출국 즉시 고객 정보 영구 파기 | ④ 24시간 한국인 1:1 베테랑 실장 상주',
   aboutImageUrl: 'https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?auto=format&fm=webp&fit=crop&w=600&q=75&ext=.webp',
   aboutLicenseTitle: '필리핀 정부기관 공식 승인 에이전시',
   aboutLicenseSub: 'PAGCOR · GAB · PCSO Official Registered Agency',
   aboutYearsExperience: '13년 현지 직영',
   aboutStat1Num: '13+',
-  aboutStat1Label: '현지 직영 VIP 운영',
+  aboutStat1Label: '년 현지 직영 VIP 운영',
   aboutStat2Num: '100%',
-  aboutStat2Label: 'PAGCOR·GAB·PCSO 정부공인',
+  aboutStat2Label: '정부 3대 기관 공인',
   aboutStat3Num: '20,000+',
-  aboutStat3Label: '누적 VIP 고객 현지 케어',
+  aboutStat3Label: '누적 VIP 고객 케어',
   aboutStat4Num: '24 / 7',
-  aboutStat4Label: '한국인 베테랑 현지 상주',
+  aboutStat4Label: '한국인 실장 현지 상주',
 
   // Casino Section Config
   casinoBadge: 'MAJOR CASINO & VIP RESORTS',
   casinoTitle: '필리핀 메이저 카지노 제휴 라인업',
   casinoSubtitle: '오아시스가 엄선한 마닐라 & 클락 최고급 5성급 복합 리조트 카지노를 소개합니다.',
 
-  // Philippines / VIP Service Section Config
-  philippinesBadge: 'OASIS VIP SERVICE & CARE',
-  philippinesTitle: '오아시스 VIP 서비스',
-  philippinesSubtitle: '최고급 호텔 프리룸부터 전용 의전 세단, 명문 골프 및 24시간 프라이빗 케어까지,\n오아시스 VIP 회원님만을 위한 특별한 서비스를 제공합니다.',
+  // Tour Service Section Config
+  philippinesBadge: 'OASIS VIP TOUR SERVICE',
+  philippinesTitle: '오아시스 투어서비스',
+  philippinesSubtitle: '최고급 호텔 프리룸부터 전용 의전 세단, 명문 골프 및 24시간 프라이빗 케어까지,\n오아시스 VIP 회원님만을 위한 특별한 맞춤 투어 서비스를 제공합니다.',
 
-  // Promotion Section Config
-  promotionBadge: 'EXCLUSIVE PROMOTIONS & EVENTS',
-  promotionTitle: '오아시스 VIP 특별 프로모션',
-  promotionSubtitle: '특급 호텔 스위트룸 무료 숙박 바우처, 항공권 페이백, 롤링 1.5% 정산 등 오아시스 VIP 회원님만의 한정 혜택을 확인하세요.',
+  // Reservation & Consultation (Former Promotion) Section Config
+  promotionBadge: '24/7 PRIVATE VIP RESERVATION',
+  promotionTitle: '24시간 1:1 VIP 실시간 상담 및 예약',
+  promotionSubtitle: '마닐라 & 클락 최고급 5성급 호텔 프리룸 바우처, 공항 VIP 단독 의전, 롤링 1.5% 우대 혜택을 24시간 실시간 전담 매니저가 비공개로 즉시 안내해 드립니다.',
 
   // Community Section Config
   communityTitle: '오아시스 VIP 커뮤니티',
@@ -65,12 +65,12 @@ export const initialSiteConfig: SiteConfig = {
 
   // Process and Nav Menu Config
   navMenu1: '오아시스',
-  navMenu2: '카지노 서비스',
-  navMenu3: 'VIP 서비스',
-  navMenu4: '프로모션',
+  navMenu2: '투어지역',
+  navMenu3: '투어서비스',
+  navMenu4: '상담예약',
   navMenu5: '커뮤니티',
   navMenu6: '이용방법',
-  headerLogo: '/images/oasis_header_logo.webp',
+  headerLogo: '/images/user_header_logo.webp',
 };
 
 export const initialBannerSlides: BannerSlide[] = [
@@ -284,25 +284,60 @@ export const initialPosts: PostItem[] = [
     date: '2026-08-25',
     viewCount: 1420,
     isPinned: true,
-    summary: '오아시스 공식 에이전트를 이용해 주시는 VIP 고객님들을 위한 2026년 특급 호텔 무료 숙박 및 전용 의전 지원 기준 안내입니다.',
-    content: `안녕하세요, 오아시스 공식 에이전트(OASIS VIP AGENCY) 총괄운영팀입니다.
+    summary: '오아시스 공식 에이전트를 이용해 주시는 VIP 고객님들을 위한 2026년 특급 호텔 무료 숙박, 전용 알파드 리무진 의전, 정부 공인 라이센스 및 프라이버시 안전 수칙 총정리 안내입니다.',
+    content: `[크기:특대][굵게]PAGCOR · GAB · PCSO 필리핀 정부 3대 기관 공식 승인[/굵게][/크기]
+[크기:대][골드]13년 무사고 현지 직영 마닐라 오아시스에이전시 VIP 이용 가이드[/골드][/크기]
 
-저희 오아시스는 필리핀 정부 공인 PAGCOR 정식 라이센스 협력 에이전시로서, 10년 무사고 원칙과 신뢰를 바탕으로 최상의 VIP 서비스를 제공해 드리고 있습니다.
+안녕하세요, 오아시스 공식 에이전트(OASIS VIP AGENCY) 총괄운영팀입니다.
 
-■ 2026년 오아시스 VIP 주요 혜택
-1. 마닐라 & 클락 5성급 복합리조트(오카다, 솔레어, COD, 한 카지노) 스위트룸 무료 숙박 지원
-2. 마닐라(NAIA) 및 클락(CRK) 국제공항 도착 시 전용 VIP 패스트트랙 입국 에스코트
-3. 최고급 토요타 알파드(Alphard) / 현대 스타리아 리무진 단독 왕복 픽업 및 전용 기사 배차
-4. 전 일정 24시간 한국인 베테랑 VIP 전담 실장 밀착 케어 (언어 소통, 테이블 에스코트, 식음료 무제한 지원)
-5. 클락 썬밸리, 미모사 명문 골프장 VIP 패스트 티오프 부킹 및 의전 차량 지원
+저희 오아시스는 2011년 설립 이래 13년간 필리핀 마닐라 및 클락 현지에서 직접 상주하며, 단 한 건의 금융 사고나 안전 문제 없는 무결점 VIP 컨시어지 케어를 고수해 왔습니다. 필리핀 정부 3대 게이밍 규제기관의 법적 라이센스 규정을 철저히 준수하여 불법 브로커나 중개 업체의 위험 없는 100% 합법적이고 안전한 여정을 약속합니다.
 
-■ 안전 이용 및 개인정보 보안 수칙
-- 모든 고객님의 방문 내역 및 상담 기록은 철저히 암호화 관리되며, 귀국 즉시 영구 파기 처리됩니다.
-- 24시간 공식 텔레그램(@oasis_official_agent) 및 공식 카카오톡 채널을 통해서만 공식 계좌 및 픽업 예약이 진행됩니다. 유사 사칭 채널에 각별히 유의해 주시기 바랍니다.
+---
 
-고객님의 품격 있는 필리핀 여정을 오아시스가 가장 완벽하게 완성해 드리겠습니다. 감사합니다.`,
+[크기:중][굵게]■ 1. 오아시스 2026년 VIP 멤버십 4대 독점 혜택[/굵게][/크기]
+
+[굵게]① 마닐라 & 클락 최고급 5성급 호텔 스위트룸 전액 지원[/굵게]
+- 대상 호텔: 오카다 마닐라, 솔레어 리조트, 시티오브드림즈(누와/노부/하얏트), 뉴포트 월드, 클락 한(HANN) 카지노, 디하이츠 클락
+- 혜택: 최상급 오션뷰 및 이그제큐티브 스위트룸 무료 숙박 바우처 지원, 전용 체크인 라운지 이용, 웰컴 다이닝 F&B 크레딧 제공
+
+[굵게]② 공항 VIP 패스트트랙 & 전용 알파드 리무진 단독 배차[/굵게]
+- 마닐라(NAIA) 및 클락(CRK) 국제공항 도착 시 전용 입국 게이트에서 의전팀이 피켓 영접
+- 기나긴 입국 심사 대기 없는 VIP 전용 패스트트랙 레인 신속 통과
+- 최고급 토요타 알파드(Alphard) 또는 스타리아 리무진 전 일정 단독 배차 및 전담 기사 상시 대기
+
+[굵게]③ 24시간 한국인 베테랑 실장 1:1 현지 밀착 의전[/굵게]
+- 필리핀 현지 10년 이상 상주 경력의 한국인 전문 실장이 24시간 1:1로 전담 동행
+- 언어 소통 및 VIP 테이블 에스코트, 전용 롤링 칩셋 혜택 현장 즉시 반영
+- 명문 골프장(미모사, 썬밸리, FA코리아) 황금 시간대 VIP 패스트 티오프 부킹 및 의전 지원
+
+[굵게]④ 100% 실시간 투명 전산 정산[/굵게]
+- 게임 종료 즉시 현장에서 고객님이 원하시는 통화(원화, 페소, 달러 등)로 1원 단위까지 투명하게 확인 후 실시간 정산
+- 13년간 단 한 건의 정산 지연 없는 압도적인 자금력과 신뢰도 보증
+
+---
+
+[크기:중][굵게]■ 2. 오아시스 VIP 원스톱 케어 진행 절차[/굵게][/크기]
+
+1. [굵게]1:1 사전 맞춤 상담[/굵게]: 일정, 항공권, 선호 호텔(오카다/솔레어/COD/한) 및 골프 예약 여부를 24시간 공식 채널로 접수
+2. [굵게]공항 VIP 패스트트랙 영접[/굵게]: 필리핀 공항 도착 게이트에서 전담 의전팀 피켓 영접 후 전용 알파드 리무진 탑승
+3. [굵게]호텔 체크인 & 전담 실장 에스코트[/굵게]: VIP 전용 창구에서 신속한 스위트룸 입실 및 현장 테이블 안내
+4. [굵게]24시간 프라이빗 케어[/굵게]: 식음료 무제한 케어, 주변 투어 및 골프 라운딩 전 일정 지원
+5. [굵게]실시간 투명 정산 & 출국 의전[/굵게]: 정산 완료 후 공항 배웅 및 [형광펜]고객 정보 영구 파기[/형광펜]
+
+---
+
+[크기:중][굵게]■ 3. 안전 이용 및 개인정보 보안 원칙 (절대 준수)[/굵게][/크기]
+
+[형광펜]※ 출국 즉시 모든 개인정보 및 방문 기록은 복구 불가능하도록 영구 파기됩니다.[/형광펜]
+- 고객님의 여권 사본, 상담 내역, 픽업 정보는 최상위 암호화 보안 시스템을 거치며 귀국 완료 즉시 영구 삭제 처리됩니다.
+- 오아시스는 어떠한 경우에도 비공식 개인 메신저나 SNS로 선입금을 요구하지 않습니다.
+- 사칭 피싱 채널에 각별히 유의하시기 바라며, 반드시 홈페이지 하단 및 상단에 등록된 공식 인증 채널(카카오톡 / 텔레그램)로만 문의해 주시기 바랍니다.
+
+[인용]“고객님의 품격 있는 필리핀 여정, 13년 무사고 오아시스가 가장 완벽하고 안전하게 완성해 드리겠습니다.”[/인용]
+
+24시간 언제든 편안하게 문의해 주시기 바랍니다. 감사합니다.`,
     thumbnail: 'https://images.unsplash.com/photo-1511193311914-0346f16efe90?auto=format&fm=webp&fit=crop&w=600&q=75&ext=.webp',
-    tags: ['공지사항', 'VIP혜택', '오아시스공식', '마닐라', '클락'],
+    tags: ['공지사항', 'VIP혜택', '오아시스공식', '마닐라', '클락', '안전수칙'],
   },
   {
     id: 'post-2',

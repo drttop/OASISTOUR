@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { loadFirebase } from '../lib/firebase';
+import { loadFirebase, getIsQuotaExceeded, handleFirestoreError } from '../lib/firebase';
 import {
   SiteConfig,
   BannerSlide,
@@ -146,12 +146,25 @@ export const getDeletedPostIds = (): Set<string> => {
 
 const sanitizeConfig = (cfg: Partial<SiteConfig>): SiteConfig => {
   const merged = { ...initialSiteConfig, ...cfg };
-  if (!merged.headerLogo || merged.headerLogo.includes('oasis_gold_logo') || merged.headerLogo.includes('oasis_logo_official')) {
-    merged.headerLogo = '/images/oasis_header_logo.webp';
+  // Check if user set a custom logo in dedicated local storage to guarantee persistence across sessions
+  const localCustomLogo = typeof window !== 'undefined' ? localStorage.getItem('oasis_custom_header_logo') : null;
+  if (localCustomLogo) {
+    merged.headerLogo = localCustomLogo;
+  } else if (!merged.headerLogo) {
+    merged.headerLogo = '/images/user_header_logo.webp';
   }
-  if (!merged.navMenu3 || merged.navMenu3 === '투어 서비스' || merged.navMenu3 === '투어서비스' || merged.navMenu3 === '필리핀 소개') {
-    merged.navMenu3 = 'VIP 서비스';
+  if (!merged.navMenu1) merged.navMenu1 = '오아시스';
+  if (!merged.navMenu2 || merged.navMenu2 === '카지노 서비스' || merged.navMenu2 === '카지노서비스') {
+    merged.navMenu2 = '투어지역';
   }
+  if (!merged.navMenu3 || merged.navMenu3 === 'VIP 서비스' || merged.navMenu3 === 'VIP서비스' || merged.navMenu3 === '투어 서비스' || merged.navMenu3 === '필리핀 소개') {
+    merged.navMenu3 = '투어서비스';
+  }
+  if (!merged.navMenu4 || merged.navMenu4 === '프로모션') {
+    merged.navMenu4 = '상담예약';
+  }
+  if (!merged.navMenu5) merged.navMenu5 = '커뮤니티';
+  if (!merged.navMenu6) merged.navMenu6 = '이용방법';
   return merged;
 };
 
@@ -327,10 +340,10 @@ export const SiteProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
     // Start listeners during browser idle time or after initial render
     const startListeners = async () => {
-      if (isCancelled) return;
+      if (isCancelled || getIsQuotaExceeded()) return;
       try {
         const { db, fs } = await loadFirebase();
-        if (isCancelled) return;
+        if (isCancelled || getIsQuotaExceeded()) return;
         const { doc, collection, onSnapshot } = fs;
 
         // 1) Listen to Site Config
@@ -341,7 +354,7 @@ export const SiteProvider: React.FC<{ children: React.ReactNode }> = ({ children
             setSiteConfigState(sanitizeConfig(data));
             setIsCloudSynced(true);
           }
-        }, (err) => console.warn('Firestore config listener error:', err));
+        }, (err) => handleFirestoreError(err, db, fs));
 
         // 2) Listen to Posts
         const postsColRef = collection(db, 'posts');
@@ -378,7 +391,7 @@ export const SiteProvider: React.FC<{ children: React.ReactNode }> = ({ children
             });
             setIsCloudSynced(true);
           }
-        }, (err) => console.warn('Firestore posts listener error:', err));
+        }, (err) => handleFirestoreError(err, db, fs));
 
         // 3) Listen to Casinos
         const casinosColRef = collection(db, 'casinos');
@@ -388,7 +401,7 @@ export const SiteProvider: React.FC<{ children: React.ReactNode }> = ({ children
             const sorted = sortCasinos(rawItems);
             setCasinosState(sorted);
           }
-        }, (err) => console.warn('Firestore casinos listener error:', err));
+        }, (err) => handleFirestoreError(err, db, fs));
 
         // 4) Listen to Philippine Tour Spots
         const spotsColRef = collection(db, 'philippine_spots');
@@ -397,7 +410,7 @@ export const SiteProvider: React.FC<{ children: React.ReactNode }> = ({ children
             const items = snap.docs.map((d) => ({ ...d.data(), id: d.id } as PhilippineTourSpot));
             setPhilippineSpotsState(items);
           }
-        }, (err) => console.warn('Firestore spots listener error:', err));
+        }, (err) => handleFirestoreError(err, db, fs));
 
         // 5) Listen to Banner Slides
         const slidesColRef = collection(db, 'banner_slides');
@@ -407,7 +420,7 @@ export const SiteProvider: React.FC<{ children: React.ReactNode }> = ({ children
             const cleanedItems = sanitizeSlides(rawItems);
             setBannerSlidesState(cleanedItems);
           }
-        }, (err) => console.warn('Firestore banner slides listener error:', err));
+        }, (err) => handleFirestoreError(err, db, fs));
 
         // 6) Listen to FAQs
         const faqsColRef = collection(db, 'faqs');
@@ -416,7 +429,7 @@ export const SiteProvider: React.FC<{ children: React.ReactNode }> = ({ children
             const items = snap.docs.map((d) => ({ ...d.data(), id: d.id } as FAQItem));
             setFaqsState(items);
           }
-        }, (err) => console.warn('Firestore faqs listener error:', err));
+        }, (err) => handleFirestoreError(err, db, fs));
 
         // 7) Listen to Service Steps Doc
         const stepsDocRef = doc(db, 'site_config', 'service_steps');
@@ -427,10 +440,10 @@ export const SiteProvider: React.FC<{ children: React.ReactNode }> = ({ children
               setServiceStepsState(data.steps);
             }
           }
-        }, (err) => console.warn('Firestore service steps listener error:', err));
+        }, (err) => handleFirestoreError(err, db, fs));
 
       } catch (err) {
-        console.error('Firebase initialization error:', err);
+        handleFirestoreError(err);
       }
     };
 
@@ -458,13 +471,13 @@ export const SiteProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   // 1-B. Inquiries listener: ONLY active when Admin panel is opened
   useEffect(() => {
-    if (!isAdminOpen) return;
+    if (!isAdminOpen || getIsQuotaExceeded()) return;
     let unsubscribe = () => {};
     let isCancelled = false;
     (async () => {
       try {
         const { db, fs } = await loadFirebase();
-        if (isCancelled) return;
+        if (isCancelled || getIsQuotaExceeded()) return;
         const inquiriesColRef = fs.collection(db, 'inquiries');
         unsubscribe = fs.onSnapshot(inquiriesColRef, (snap) => {
           if (!snap.empty) {
@@ -472,9 +485,9 @@ export const SiteProvider: React.FC<{ children: React.ReactNode }> = ({ children
             items.sort((a, b) => (b.createdAt || '').localeCompare(a.createdAt || ''));
             setInquiryLeadsState(items);
           }
-        }, (err) => console.warn('Firestore inquiries listener error:', err));
+        }, (err) => handleFirestoreError(err, db, fs));
       } catch (err) {
-        console.warn('Inquiries listener error:', err);
+        handleFirestoreError(err);
       }
     })();
     return () => {
@@ -549,15 +562,36 @@ export const SiteProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   // ===================== CRUD ACTIONS WITH FIRESTORE SYNC =====================
 
-  const updateSiteConfig = async (partial: Partial<SiteConfig>) => {
-    setSiteConfigState((prev) => ({ ...prev, ...partial }));
+  const safeFirestoreWrite = async (
+    operation: (db: any, fs: typeof import('firebase/firestore')) => Promise<void>
+  ) => {
+    if (getIsQuotaExceeded()) {
+      return;
+    }
     try {
       const { db, fs } = await loadFirebase();
+      await operation(db, fs);
+    } catch (err: any) {
+      const isQuota = await handleFirestoreError(err);
+      if (!isQuota) {
+        console.warn('Firestore write warning:', err);
+      }
+    }
+  };
+
+  const updateSiteConfig = async (partial: Partial<SiteConfig>) => {
+    if (partial.headerLogo && typeof window !== 'undefined') {
+      try {
+        localStorage.setItem('oasis_custom_header_logo', partial.headerLogo);
+      } catch (e) {
+        console.warn('Could not cache custom header logo locally:', e);
+      }
+    }
+    setSiteConfigState((prev) => ({ ...prev, ...partial }));
+    safeFirestoreWrite(async (db, fs) => {
       const configDocRef = fs.doc(db, 'site_config', 'main');
       await fs.setDoc(configDocRef, partial, { merge: true });
-    } catch (err) {
-      console.error('Failed to sync siteConfig to Firestore:', err);
-    }
+    });
   };
 
   const setBannerSlides = (slides: BannerSlide[]) => {
@@ -568,13 +602,10 @@ export const SiteProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setBannerSlidesState((prev) =>
       prev.map((item) => (item.id === id ? { ...item, ...slide } : item))
     );
-    try {
-      const { db, fs } = await loadFirebase();
+    safeFirestoreWrite(async (db, fs) => {
       const docRef = fs.doc(db, 'banner_slides', id);
       await fs.setDoc(docRef, slide, { merge: true });
-    } catch (err) {
-      console.error('Failed to update banner slide in Firestore:', err);
-    }
+    });
   };
 
   const setCasinos = (newCasinos: CasinoItem[]) => {
@@ -584,53 +615,41 @@ export const SiteProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const reorderCasinos = async (orderedList: CasinoItem[]) => {
     const updated = orderedList.map((c, idx) => ({ ...c, order: idx + 1 }));
     setCasinosState(updated);
-    try {
-      const { db, fs } = await loadFirebase();
+    safeFirestoreWrite(async (db, fs) => {
       const batch = fs.writeBatch(db);
       updated.forEach((c) => {
         batch.set(fs.doc(db, 'casinos', c.id), { order: c.order }, { merge: true });
       });
       await batch.commit();
-    } catch (err) {
-      console.error('Failed to update casino order in Firestore:', err);
-    }
+    });
   };
 
   const addCasino = async (casino: Omit<CasinoItem, 'id'>) => {
     const newId = `casino-${Date.now()}`;
     const newCasino: CasinoItem = { ...casino, id: newId };
     setCasinosState((prev) => [newCasino, ...prev]);
-    try {
-      const { db, fs } = await loadFirebase();
+    safeFirestoreWrite(async (db, fs) => {
       const docRef = fs.doc(db, 'casinos', newId);
       await fs.setDoc(docRef, newCasino);
-    } catch (err) {
-      console.error('Failed to add casino to Firestore:', err);
-    }
+    });
   };
 
   const updateCasino = async (id: string, partial: Partial<CasinoItem>) => {
     setCasinosState((prev) =>
       prev.map((item) => (item.id === id ? { ...item, ...partial } : item))
     );
-    try {
-      const { db, fs } = await loadFirebase();
+    safeFirestoreWrite(async (db, fs) => {
       const docRef = fs.doc(db, 'casinos', id);
       await fs.setDoc(docRef, partial, { merge: true });
-    } catch (err) {
-      console.error('Failed to update casino in Firestore:', err);
-    }
+    });
   };
 
   const deleteCasino = async (id: string) => {
     setCasinosState((prev) => prev.filter((item) => item.id !== id));
-    try {
-      const { db, fs } = await loadFirebase();
+    safeFirestoreWrite(async (db, fs) => {
       const docRef = fs.doc(db, 'casinos', id);
       await fs.deleteDoc(docRef);
-    } catch (err) {
-      console.error('Failed to delete casino from Firestore:', err);
-    }
+    });
   };
 
   const setPosts = (newPosts: PostItem[]) => {
@@ -677,15 +696,11 @@ export const SiteProvider: React.FC<{ children: React.ReactNode }> = ({ children
       return updated;
     });
 
-    try {
+    safeFirestoreWrite(async (db, fs) => {
       const cleanDoc = sanitizeForFirestore(newPost);
-      const { db, fs } = await loadFirebase();
       const docRef = fs.doc(db, 'posts', newId);
       await fs.setDoc(docRef, cleanDoc);
-      console.log('Post successfully saved to Firestore:', newId);
-    } catch (err) {
-      console.error('Failed to add post to Firestore:', err);
-    }
+    });
 
     return newPost;
   };
@@ -707,16 +722,11 @@ export const SiteProvider: React.FC<{ children: React.ReactNode }> = ({ children
       setSelectedPost((curr) => (curr?.id === id ? updatedItem : curr));
     }
 
-    try {
+    safeFirestoreWrite(async (db, fs) => {
       const cleanPartial = sanitizeForFirestore(partial);
-      const { db, fs } = await loadFirebase();
       const docRef = fs.doc(db, 'posts', id);
       await fs.setDoc(docRef, cleanPartial, { merge: true });
-      console.log('Post successfully updated in Firestore:', id);
-    } catch (err) {
-      console.error('Failed to update post in Firestore:', err);
-      throw err;
-    }
+    });
   };
 
   const deletePost = async (id: string) => {
@@ -751,14 +761,10 @@ export const SiteProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
 
     // 5. Delete in Firestore
-    try {
-      const { db, fs } = await loadFirebase();
+    safeFirestoreWrite(async (db, fs) => {
       const docRef = fs.doc(db, 'posts', id);
       await fs.deleteDoc(docRef);
-      console.log('Post deleted successfully from Firestore:', id);
-    } catch (err) {
-      console.error('Failed to delete post from Firestore:', err);
-    }
+    });
   };
 
   const incrementPostView = async (id: string) => {
@@ -780,16 +786,13 @@ export const SiteProvider: React.FC<{ children: React.ReactNode }> = ({ children
       }
     }
 
-    try {
-      const { db, fs } = await loadFirebase();
+    safeFirestoreWrite(async (db, fs) => {
       const docRef = fs.doc(db, 'posts', id);
       const target = posts.find((p) => p.id === id);
       if (target) {
         await fs.updateDoc(docRef, { viewCount: (target.viewCount || 0) + 1 });
       }
-    } catch (err) {
-      console.warn('Failed to increment view count in Firestore:', err);
-    }
+    });
   };
 
   const addInquiryLead = async (lead: Omit<InquiryLead, 'id' | 'createdAt' | 'status'>) => {
@@ -803,37 +806,28 @@ export const SiteProvider: React.FC<{ children: React.ReactNode }> = ({ children
       status: '접수대기',
     };
     setInquiryLeadsState((prev) => [newLead, ...prev]);
-    try {
-      const { db, fs } = await loadFirebase();
+    safeFirestoreWrite(async (db, fs) => {
       const docRef = fs.doc(db, 'inquiries', newId);
       await fs.setDoc(docRef, newLead);
-    } catch (err) {
-      console.error('Failed to submit inquiry to Firestore:', err);
-    }
+    });
   };
 
   const updateInquiryStatus = async (id: string, status: InquiryLead['status']) => {
     setInquiryLeadsState((prev) =>
       prev.map((item) => (item.id === id ? { ...item, status } : item))
     );
-    try {
-      const { db, fs } = await loadFirebase();
+    safeFirestoreWrite(async (db, fs) => {
       const docRef = fs.doc(db, 'inquiries', id);
       await fs.updateDoc(docRef, { status });
-    } catch (err) {
-      console.error('Failed to update inquiry in Firestore:', err);
-    }
+    });
   };
 
   const deleteInquiry = async (id: string) => {
     setInquiryLeadsState((prev) => prev.filter((item) => item.id !== id));
-    try {
-      const { db, fs } = await loadFirebase();
+    safeFirestoreWrite(async (db, fs) => {
       const docRef = fs.doc(db, 'inquiries', id);
       await fs.deleteDoc(docRef);
-    } catch (err) {
-      console.error('Failed to delete inquiry from Firestore:', err);
-    }
+    });
   };
 
   const setServiceSteps = (newSteps: ServiceStep[]) => {
@@ -845,13 +839,10 @@ export const SiteProvider: React.FC<{ children: React.ReactNode }> = ({ children
     if (next[index]) {
       next[index] = { ...next[index], ...partial };
       setServiceStepsState(next);
-      try {
-        const { db, fs } = await loadFirebase();
+      safeFirestoreWrite(async (db, fs) => {
         const stepsDocRef = fs.doc(db, 'site_config', 'service_steps');
         await fs.setDoc(stepsDocRef, { steps: next });
-      } catch (err) {
-        console.error('Failed to update service steps in Firestore:', err);
-      }
+      });
     }
   };
 
@@ -863,37 +854,28 @@ export const SiteProvider: React.FC<{ children: React.ReactNode }> = ({ children
     const newId = `spot-${Date.now()}`;
     const newSpot: PhilippineTourSpot = { ...spot, id: newId };
     setPhilippineSpotsState((prev) => [newSpot, ...prev]);
-    try {
-      const { db, fs } = await loadFirebase();
+    safeFirestoreWrite(async (db, fs) => {
       const docRef = fs.doc(db, 'philippine_spots', newId);
       await fs.setDoc(docRef, newSpot);
-    } catch (err) {
-      console.error('Failed to add spot to Firestore:', err);
-    }
+    });
   };
 
   const updatePhilippineSpot = async (id: string, partial: Partial<PhilippineTourSpot>) => {
     setPhilippineSpotsState((prev) =>
       prev.map((item) => (item.id === id ? { ...item, ...partial } : item))
     );
-    try {
-      const { db, fs } = await loadFirebase();
+    safeFirestoreWrite(async (db, fs) => {
       const docRef = fs.doc(db, 'philippine_spots', id);
       await fs.setDoc(docRef, partial, { merge: true });
-    } catch (err) {
-      console.error('Failed to update spot in Firestore:', err);
-    }
+    });
   };
 
   const deletePhilippineSpot = async (id: string) => {
     setPhilippineSpotsState((prev) => prev.filter((item) => item.id !== id));
-    try {
-      const { db, fs } = await loadFirebase();
+    safeFirestoreWrite(async (db, fs) => {
       const docRef = fs.doc(db, 'philippine_spots', id);
       await fs.deleteDoc(docRef);
-    } catch (err) {
-      console.error('Failed to delete spot from Firestore:', err);
-    }
+    });
   };
 
   const setFaqs = (newFaqs: FAQItem[]) => {
@@ -904,37 +886,28 @@ export const SiteProvider: React.FC<{ children: React.ReactNode }> = ({ children
     const newId = `faq-${Date.now()}`;
     const newFaq: FAQItem = { ...faq, id: newId };
     setFaqsState((prev) => [...prev, newFaq]);
-    try {
-      const { db, fs } = await loadFirebase();
+    safeFirestoreWrite(async (db, fs) => {
       const docRef = fs.doc(db, 'faqs', newId);
       await fs.setDoc(docRef, newFaq);
-    } catch (err) {
-      console.error('Failed to add faq to Firestore:', err);
-    }
+    });
   };
 
   const updateFaq = async (id: string, partial: Partial<FAQItem>) => {
     setFaqsState((prev) =>
       prev.map((item) => (item.id === id ? { ...item, ...partial } : item))
     );
-    try {
-      const { db, fs } = await loadFirebase();
+    safeFirestoreWrite(async (db, fs) => {
       const docRef = fs.doc(db, 'faqs', id);
       await fs.setDoc(docRef, partial, { merge: true });
-    } catch (err) {
-      console.error('Failed to update faq in Firestore:', err);
-    }
+    });
   };
 
   const deleteFaq = async (id: string) => {
     setFaqsState((prev) => prev.filter((item) => item.id !== id));
-    try {
-      const { db, fs } = await loadFirebase();
+    safeFirestoreWrite(async (db, fs) => {
       const docRef = fs.doc(db, 'faqs', id);
       await fs.deleteDoc(docRef);
-    } catch (err) {
-      console.error('Failed to delete faq from Firestore:', err);
-    }
+    });
   };
 
   const resetToDefaults = async () => {
@@ -956,8 +929,7 @@ export const SiteProvider: React.FC<{ children: React.ReactNode }> = ({ children
     localStorage.removeItem(STORAGE_KEYS.FAQS);
 
     // Sync reset to Firestore
-    try {
-      const { db, fs } = await loadFirebase();
+    safeFirestoreWrite(async (db, fs) => {
       await fs.setDoc(fs.doc(db, 'site_config', 'main'), initialSiteConfig);
       await fs.setDoc(fs.doc(db, 'site_config', 'service_steps'), { steps: initialServiceSteps });
 
@@ -967,9 +939,7 @@ export const SiteProvider: React.FC<{ children: React.ReactNode }> = ({ children
       postsSnap.docs.forEach((d) => batch.delete(d.ref));
       initialPosts.forEach((p) => batch.set(fs.doc(db, 'posts', p.id), p));
       await batch.commit();
-    } catch (err) {
-      console.error('Failed to reset Firestore to defaults:', err);
-    }
+    });
   };
 
   const getExportJSONString = (): string => {
@@ -1001,45 +971,47 @@ export const SiteProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const importDataJSON = async (jsonString: string): Promise<boolean> => {
     try {
       const parsed = JSON.parse(jsonString);
-      const { db, fs } = await loadFirebase();
-      if (parsed.siteConfig) {
-        setSiteConfigState(parsed.siteConfig);
-        await fs.setDoc(fs.doc(db, 'site_config', 'main'), parsed.siteConfig);
-      }
-      if (parsed.posts && Array.isArray(parsed.posts)) {
-        setPostsState(parsed.posts);
-        const batch = fs.writeBatch(db);
-        parsed.posts.forEach((p: PostItem) => batch.set(fs.doc(db, 'posts', p.id), p));
-        await batch.commit();
-      }
-      if (parsed.casinos && Array.isArray(parsed.casinos)) {
-        setCasinosState(parsed.casinos);
-        const batch = fs.writeBatch(db);
-        parsed.casinos.forEach((c: CasinoItem) => batch.set(fs.doc(db, 'casinos', c.id), c));
-        await batch.commit();
-      }
-      if (parsed.philippineSpots && Array.isArray(parsed.philippineSpots)) {
-        setPhilippineSpotsState(parsed.philippineSpots);
-        const batch = fs.writeBatch(db);
-        parsed.philippineSpots.forEach((s: PhilippineTourSpot) => batch.set(fs.doc(db, 'philippine_spots', s.id), s));
-        await batch.commit();
-      }
-      if (parsed.bannerSlides && Array.isArray(parsed.bannerSlides)) {
-        setBannerSlidesState(parsed.bannerSlides);
-        const batch = fs.writeBatch(db);
-        parsed.bannerSlides.forEach((b: BannerSlide) => batch.set(fs.doc(db, 'banner_slides', b.id), b));
-        await batch.commit();
-      }
-      if (parsed.faqs && Array.isArray(parsed.faqs)) {
-        setFaqsState(parsed.faqs);
-        const batch = fs.writeBatch(db);
-        parsed.faqs.forEach((f: FAQItem) => batch.set(fs.doc(db, 'faqs', f.id), f));
-        await batch.commit();
-      }
-      if (parsed.serviceSteps && Array.isArray(parsed.serviceSteps)) {
-        setServiceStepsState(parsed.serviceSteps);
-        await fs.setDoc(fs.doc(db, 'site_config', 'service_steps'), { steps: parsed.serviceSteps });
-      }
+      if (parsed.siteConfig) setSiteConfigState(parsed.siteConfig);
+      if (parsed.posts && Array.isArray(parsed.posts)) setPostsState(parsed.posts);
+      if (parsed.casinos && Array.isArray(parsed.casinos)) setCasinosState(parsed.casinos);
+      if (parsed.philippineSpots && Array.isArray(parsed.philippineSpots)) setPhilippineSpotsState(parsed.philippineSpots);
+      if (parsed.bannerSlides && Array.isArray(parsed.bannerSlides)) setBannerSlidesState(parsed.bannerSlides);
+      if (parsed.faqs && Array.isArray(parsed.faqs)) setFaqsState(parsed.faqs);
+      if (parsed.serviceSteps && Array.isArray(parsed.serviceSteps)) setServiceStepsState(parsed.serviceSteps);
+
+      safeFirestoreWrite(async (db, fs) => {
+        if (parsed.siteConfig) {
+          await fs.setDoc(fs.doc(db, 'site_config', 'main'), parsed.siteConfig);
+        }
+        if (parsed.posts && Array.isArray(parsed.posts)) {
+          const batch = fs.writeBatch(db);
+          parsed.posts.forEach((p: PostItem) => batch.set(fs.doc(db, 'posts', p.id), p));
+          await batch.commit();
+        }
+        if (parsed.casinos && Array.isArray(parsed.casinos)) {
+          const batch = fs.writeBatch(db);
+          parsed.casinos.forEach((c: CasinoItem) => batch.set(fs.doc(db, 'casinos', c.id), c));
+          await batch.commit();
+        }
+        if (parsed.philippineSpots && Array.isArray(parsed.philippineSpots)) {
+          const batch = fs.writeBatch(db);
+          parsed.philippineSpots.forEach((s: PhilippineTourSpot) => batch.set(fs.doc(db, 'philippine_spots', s.id), s));
+          await batch.commit();
+        }
+        if (parsed.bannerSlides && Array.isArray(parsed.bannerSlides)) {
+          const batch = fs.writeBatch(db);
+          parsed.bannerSlides.forEach((b: BannerSlide) => batch.set(fs.doc(db, 'banner_slides', b.id), b));
+          await batch.commit();
+        }
+        if (parsed.faqs && Array.isArray(parsed.faqs)) {
+          const batch = fs.writeBatch(db);
+          parsed.faqs.forEach((f: FAQItem) => batch.set(fs.doc(db, 'faqs', f.id), f));
+          await batch.commit();
+        }
+        if (parsed.serviceSteps && Array.isArray(parsed.serviceSteps)) {
+          await fs.setDoc(fs.doc(db, 'site_config', 'service_steps'), { steps: parsed.serviceSteps });
+        }
+      });
       return true;
     } catch {
       return false;

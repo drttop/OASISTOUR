@@ -32,9 +32,9 @@ export const Header: React.FC = () => {
 
   const navItems = [
     { label: siteConfig.navMenu1 || '오아시스', href: '#about', id: 'nav-about' },
-    { label: siteConfig.navMenu3 || 'VIP 서비스', href: '#philippines', id: 'nav-philippines' },
-    { label: siteConfig.navMenu2 || '카지노 서비스', href: '#casino', id: 'nav-casino' },
-    { label: siteConfig.navMenu4 || '프로모션', href: '#promotion', id: 'nav-promotion' },
+    { label: siteConfig.navMenu3 || '투어서비스', href: '#philippines', id: 'nav-philippines' },
+    { label: siteConfig.navMenu2 || '투어지역', href: '#casino', id: 'nav-casino' },
+    { label: siteConfig.navMenu4 || '상담예약', href: '#promotion', id: 'nav-promotion' },
     { label: siteConfig.navMenu5 || '커뮤니티', href: '#community', id: 'nav-community' },
     { label: siteConfig.navMenu6 || '이용방법', href: '#process', id: 'nav-process' },
   ];
@@ -42,9 +42,9 @@ export const Header: React.FC = () => {
   // Mobile horizontal bar: 홈 삭제, 이용방법 제외(상단 삼선에서만 표시)
   const mobileHorizontalNavItems = [
     { label: siteConfig.navMenu1 || '오아시스', href: '#about', id: 'mob-horiz-about' },
-    { label: siteConfig.navMenu3 || 'VIP서비스', href: '#philippines', id: 'mob-horiz-philippines' },
-    { label: siteConfig.navMenu2 || '카지노서비스', href: '#casino', id: 'mob-horiz-casino' },
-    { label: siteConfig.navMenu4 || '프로모션', href: '#promotion', id: 'mob-horiz-promotion' },
+    { label: siteConfig.navMenu3 || '투어서비스', href: '#philippines', id: 'mob-horiz-philippines' },
+    { label: siteConfig.navMenu2 || '투어지역', href: '#casino', id: 'mob-horiz-casino' },
+    { label: siteConfig.navMenu4 || '상담예약', href: '#promotion', id: 'mob-horiz-promotion' },
     { label: siteConfig.navMenu5 || '커뮤니티', href: '#community', id: 'mob-horiz-community' },
   ];
 
@@ -168,8 +168,8 @@ export const Header: React.FC = () => {
       <div
         className={`w-full transition-all duration-300 ${
           isScrolled
-            ? 'shadow-md bg-slate-950/95 backdrop-blur-md border-b border-slate-800'
-            : 'border-b border-white/10 bg-slate-950'
+            ? 'shadow-md bg-black/95 backdrop-blur-md border-b border-neutral-800'
+            : 'border-b border-white/10 bg-black'
         }`}
       >
         <div className={`max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative flex items-center justify-between transition-all duration-300 ${isScrolled ? 'py-3.5' : 'py-4 sm:py-5'}`}>
@@ -184,7 +184,7 @@ export const Header: React.FC = () => {
             >
               <span className="sr-only">마닐라 오아시스에이전시 홈</span>
               <img
-                src={siteConfig.headerLogo || "/images/oasis_header_logo.webp"}
+                src={siteConfig.headerLogo || "/images/user_header_logo.webp"}
                 alt={siteConfig.siteName || "OASIS VIP"}
                 width={200}
                 height={42}
@@ -193,8 +193,8 @@ export const Header: React.FC = () => {
                 decoding="async"
                 onError={(e) => {
                   const target = e.currentTarget;
-                  if (!target.src.endsWith('oasis_header_logo.png')) {
-                    target.src = '/images/oasis_header_logo.png';
+                  if (!target.src.endsWith('user_header_logo.png')) {
+                    target.src = '/images/user_header_logo.png';
                   }
                 }}
                 className="h-8 sm:h-10 w-auto max-w-[220px] object-contain"
@@ -236,7 +236,7 @@ export const Header: React.FC = () => {
         </div>
 
         {/* Mobile Horizontal Navigation (Category Bar - 홈 삭제, 이용방법은 상단 삼선에서만 표시) */}
-        <div className="lg:hidden w-full border-t border-slate-800/50 px-2 sm:px-4">
+        <div className="lg:hidden w-full border-t border-neutral-800/80 bg-black px-2 sm:px-4">
           <nav className="flex items-center justify-around sm:justify-between w-full py-2.5" aria-label="모바일 카테고리 네비게이션">
             {mobileHorizontalNavItems.map((item) => (
               <a
@@ -254,17 +254,17 @@ export const Header: React.FC = () => {
 
       {/* Mobile Drawer Menu */}
       {mobileMenuOpen && (
-        <div className="lg:hidden bg-white border-b border-slate-200 shadow-xl px-4 pt-3 pb-6 space-y-3 animate-in slide-in-from-top duration-200">
+        <div className="lg:hidden bg-[#0a0a0a] border-b border-neutral-800 shadow-2xl px-4 pt-3 pb-6 space-y-3 animate-in slide-in-from-top duration-200">
           <nav className="space-y-1" aria-label="모바일 전체 사이트 메뉴">
             {navItems.map((item) => (
               <a
                 key={`mob-${item.id}`}
                 href={item.href}
                 onClick={(e) => scrollToSection(e, item.href)}
-                className="flex items-center justify-between px-3 py-3 rounded-lg text-base font-semibold text-slate-800 hover:bg-slate-50 hover:text-[#30308A]"
+                className="flex items-center justify-between px-3 py-3 rounded-lg text-base font-semibold text-neutral-200 hover:bg-neutral-900 hover:text-[#E5B54F] transition-colors"
               >
                 <span>{item.label}</span>
-                <ChevronRight className="w-4 h-4 text-slate-400" />
+                <ChevronRight className="w-4 h-4 text-neutral-500" />
               </a>
             ))}
           </nav>

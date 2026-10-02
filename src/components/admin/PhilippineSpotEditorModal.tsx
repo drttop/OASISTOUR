@@ -91,11 +91,6 @@ export const PhilippineSpotEditorModal: React.FC<Props> = ({
       return;
     }
 
-    const tags = formData.tagsString
-      .split(',')
-      .map((t) => t.trim())
-      .filter((t) => t.length > 0);
-
     const payload = {
       title: formData.title,
       subtitle: formData.subtitle,
@@ -103,7 +98,7 @@ export const PhilippineSpotEditorModal: React.FC<Props> = ({
       location: formData.location || 'Metro Manila / Clark',
       image: formData.image || 'https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fm=webp&fit=crop&w=800&q=80&ext=.webp',
       description: formData.description,
-      tags: tags.length > 0 ? tags : ['VIP의전', 'VIP서비스'],
+      tags: initialData?.tags || ['투어서비스', 'VIP케어'],
     };
 
     if (initialData?.id) {
@@ -123,7 +118,7 @@ export const PhilippineSpotEditorModal: React.FC<Props> = ({
           <div className="flex items-center gap-2">
             <Sparkles className="w-5 h-5 text-[#E5B54F]" />
             <h3 className="font-bold text-base">
-              {initialData ? 'VIP 서비스 카드 정보 수정' : '새로운 VIP 서비스 카드 등록'}
+              {initialData ? '투어서비스 카드 정보 수정' : '새로운 투어서비스 카드 등록'}
             </h3>
           </div>
           <button
@@ -139,7 +134,7 @@ export const PhilippineSpotEditorModal: React.FC<Props> = ({
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div className="sm:col-span-2">
               <label className="block font-bold text-slate-800 mb-1">
-                카드 메인 타이틀 <span className="text-red-500">*</span>
+                투어서비스 카드 메인 타이틀 <span className="text-red-500">*</span>
               </label>
               <input
                 type="text"
@@ -317,19 +312,6 @@ export const PhilippineSpotEditorModal: React.FC<Props> = ({
                 value={formData.description}
                 onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                 placeholder="오아시스 VIP 고객님께 제공되는 전용 혜택과 VIP 서비스 안내 내용을 작성하세요."
-                className="w-full px-3.5 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-[#30308A]"
-              />
-            </div>
-
-            <div className="sm:col-span-2">
-              <label className="block font-bold text-slate-800 mb-1">
-                태그 목록 (쉼표 , 로 구분)
-              </label>
-              <input
-                type="text"
-                value={formData.tagsString}
-                onChange={(e) => setFormData({ ...formData, tagsString: e.target.value })}
-                placeholder="5성급 호텔, 스위트룸 무료지원, 오션뷰, 24시간 의전"
                 className="w-full px-3.5 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-[#30308A]"
               />
             </div>
