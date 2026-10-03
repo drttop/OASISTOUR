@@ -144,13 +144,28 @@ export const getDeletedPostIds = (): Set<string> => {
   }
 };
 
+// Ensure stale localStorage from older or duplicated app versions is cleanly migrated
+const APP_STORAGE_VERSION = 'v2_oasis_official_isolated';
+if (typeof window !== 'undefined') {
+  try {
+    const currentVersion = localStorage.getItem('oasis_app_storage_version');
+    if (currentVersion !== APP_STORAGE_VERSION) {
+      localStorage.removeItem(STORAGE_KEYS.CONFIG);
+      localStorage.removeItem(STORAGE_KEYS.POSTS);
+      localStorage.removeItem('oasis_custom_header_logo');
+      localStorage.removeItem('oasis_deleted_post_ids');
+      localStorage.setItem('oasis_app_storage_version', APP_STORAGE_VERSION);
+    }
+  } catch {}
+}
+
 const sanitizeConfig = (cfg: Partial<SiteConfig>): SiteConfig => {
   const merged = { ...initialSiteConfig, ...cfg };
   // Check if user set a custom logo in dedicated local storage to guarantee persistence across sessions
   const localCustomLogo = typeof window !== 'undefined' ? localStorage.getItem('oasis_custom_header_logo') : null;
-  if (localCustomLogo) {
+  if (localCustomLogo && localCustomLogo !== '/images/oasis_gold_logo.webp') {
     merged.headerLogo = localCustomLogo;
-  } else if (!merged.headerLogo) {
+  } else if (!merged.headerLogo || merged.headerLogo === '/images/oasis_gold_logo.webp') {
     merged.headerLogo = '/images/user_header_logo.webp';
   }
   if (!merged.navMenu1) merged.navMenu1 = '오아시스';
