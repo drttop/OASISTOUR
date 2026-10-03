@@ -37,7 +37,18 @@ async function syncSEO() {
   }
 
   if (posts.length === 0) {
-    console.log('ℹ️ No Firestore posts found. Skipping static update.');
+    try {
+      const initialDataModule = await import('../src/data/initialData.ts');
+      posts = initialDataModule.initialPosts || [];
+      if (!siteConfig) siteConfig = initialDataModule.initialSiteConfig;
+      console.log(`ℹ️ Firestore returned 0 posts. Loaded ${posts.length} default posts from initialData.ts.`);
+    } catch (importErr) {
+      console.warn('⚠️ Could not import initialData fallback:', importErr.message);
+    }
+  }
+
+  if (posts.length === 0) {
+    console.log('ℹ️ No posts available. Skipping static update.');
     return;
   }
 
