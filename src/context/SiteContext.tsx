@@ -131,21 +131,11 @@ const sanitizeForFirestore = (obj: any): any => {
 };
 
 export const getDeletedPostIds = (): Set<string> => {
-  if (typeof window === 'undefined') return new Set();
-  try {
-    const saved = localStorage.getItem(STORAGE_KEYS.DELETED_POSTS);
-    if (!saved) return new Set();
-    const parsed: string[] = JSON.parse(saved);
-    // CRITICAL: Only hardcoded demo posts ('post-1' ~ 'post-6') should ever be filtered by DELETED_POSTS!
-    // User-created posts live in Firestore and should NEVER be blacklisted or auto-deleted by this mechanism.
-    return new Set(parsed.filter((id) => /^post-[1-6]$/.test(id)));
-  } catch {
-    return new Set();
-  }
+  return new Set();
 };
 
 // Ensure stale localStorage from older or duplicated app versions is cleanly migrated
-const APP_STORAGE_VERSION = 'v2_oasis_official_isolated';
+const APP_STORAGE_VERSION = 'v4_oasis_two_posts_official';
 if (typeof window !== 'undefined') {
   try {
     const currentVersion = localStorage.getItem('oasis_app_storage_version');
@@ -154,6 +144,7 @@ if (typeof window !== 'undefined') {
       localStorage.removeItem(STORAGE_KEYS.POSTS);
       localStorage.removeItem('oasis_custom_header_logo');
       localStorage.removeItem('oasis_deleted_post_ids');
+      localStorage.removeItem(STORAGE_KEYS.DELETED_POSTS);
       localStorage.setItem('oasis_app_storage_version', APP_STORAGE_VERSION);
     }
   } catch {}
@@ -242,33 +233,16 @@ export const SiteProvider: React.FC<{ children: React.ReactNode }> = ({ children
   });
 
   const [posts, setPostsState] = useState<PostItem[]>(() => {
-    const deletedIds = getDeletedPostIds();
-    const availableInitial = initialPosts.filter((ip) => !deletedIds.has(ip.id));
-    const saved = localStorage.getItem(STORAGE_KEYS.POSTS);
-    if (!saved) return availableInitial;
+    const saved = typeof window !== 'undefined' ? localStorage.getItem(STORAGE_KEYS.POSTS) : null;
+    if (!saved) return initialPosts;
     try {
       const parsed: PostItem[] = JSON.parse(saved);
-      const validParsed = parsed.filter((p) => !deletedIds.has(p.id));
-      const existingIds = new Set(validParsed.map((p) => p.id));
-      const missingInitial = availableInitial.filter((ip) => !existingIds.has(ip.id));
-      const combined = [...validParsed, ...missingInitial];
-      // Ensure initial sample posts inherit map data if user had old localStorage
-      return combined.map((p) => {
-        const matchingInitial = initialPosts.find((ip) => ip.id === p.id);
-        if (matchingInitial?.mapLocation && !p.mapLocation) {
-          return {
-            ...p,
-            mapLocation: matchingInitial.mapLocation,
-            content:
-              matchingInitial.content.includes('[지도') && !p.content.includes('[지도')
-                ? matchingInitial.content
-                : p.content,
-          };
-        }
-        return p;
-      });
+      if (!Array.isArray(parsed) || parsed.length === 0) {
+        return initialPosts;
+      }
+      return parsed;
     } catch {
-      return availableInitial;
+      return initialPosts;
     }
   });
 
@@ -374,7 +348,6 @@ export const SiteProvider: React.FC<{ children: React.ReactNode }> = ({ children
         // 2) Listen to Posts
         const postsColRef = collection(db, 'posts');
         unsubscribePosts = onSnapshot(postsColRef, (snap) => {
-          const deletedIds = getDeletedPostIds();
           if (!snap.empty) {
             const remoteItems = snap.docs
               .map((d) => {
@@ -385,25 +358,18 @@ export const SiteProvider: React.FC<{ children: React.ReactNode }> = ({ children
                   viewCount: typeof data.viewCount === 'number' && !isNaN(data.viewCount) ? data.viewCount : 392,
                 } as PostItem;
               })
-              .filter((p) => !deletedIds.has(p.id) && !(p as any).isDeleted);
+              .filter((p) => !(p as any).isDeleted);
 
-            setPostsState((prev) => {
-              const remoteMap = new Map(remoteItems.map((p) => [p.id, p]));
-              const merged = [...remoteItems];
-              prev.forEach((localPost) => {
-                if (!remoteMap.has(localPost.id) && !deletedIds.has(localPost.id)) {
-                  merged.push(localPost);
-                }
-              });
-              merged.sort((a, b) => {
-                if (a.isPinned && !b.isPinned) return -1;
-                if (!a.isPinned && b.isPinned) return 1;
-                const dateComp = (b.date || '').localeCompare(a.date || '');
-                if (dateComp !== 0) return dateComp;
-                return (b.createdAt || 0) - (a.createdAt || 0);
-              });
-              return merged;
+            remoteItems.sort((a, b) => {
+              if (a.isPinned && !b.isPinned) return -1;
+              if (!a.isPinned && b.isPinned) return 1;
+              const dateComp = (b.date || '').localeCompare(a.date || '');
+              if (dateComp !== 0) return dateComp;
+              return (b.createdAt || 0) - (a.createdAt || 0);
             });
+
+            setPostsState(remoteItems);
+            safeStorageSet(STORAGE_KEYS.POSTS, JSON.stringify(remoteItems));
             setIsCloudSynced(true);
           }
         }, (err) => handleFirestoreError(err, db, fs));
@@ -676,15 +642,8 @@ export const SiteProvider: React.FC<{ children: React.ReactNode }> = ({ children
     const dateStr = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
     const timestamp = Date.now();
     
-    // Generate a unique ID using timestamp to completely eliminate collisions with deleted demo IDs
+    // Generate a unique ID using timestamp
     const newId = `post-${timestamp}-${Math.random().toString(36).substring(2, 6)}`;
-
-    // Ensure new ID is definitely NOT in deleted IDs
-    const currentDeleted = getDeletedPostIds();
-    if (currentDeleted.has(newId)) {
-      currentDeleted.delete(newId);
-      safeStorageSet(STORAGE_KEYS.DELETED_POSTS, JSON.stringify(Array.from(currentDeleted)));
-    }
 
     const initialViews = typeof post.viewCount === 'number' && !isNaN(post.viewCount) && post.viewCount >= 0
       ? post.viewCount
@@ -745,37 +704,22 @@ export const SiteProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   const deletePost = async (id: string) => {
-    // 1. Only record in deleted IDs if it's one of the initial hardcoded demo posts ('post-1' ~ 'post-6')
-    // to prevent code reactivation upon refresh
-    if (/^post-[1-6]$/.test(id)) {
-      const currentDeleted = getDeletedPostIds();
-      currentDeleted.add(id);
-      safeStorageSet(STORAGE_KEYS.DELETED_POSTS, JSON.stringify(Array.from(currentDeleted)));
-    } else {
-      // For custom posts, ensure it's removed from DELETED_POSTS if it was ever placed there by old code
-      const currentDeleted = getDeletedPostIds();
-      if (currentDeleted.has(id)) {
-        currentDeleted.delete(id);
-        safeStorageSet(STORAGE_KEYS.DELETED_POSTS, JSON.stringify(Array.from(currentDeleted)));
-      }
-    }
-
-    // 2. Optimistic local state update and storage sync
+    // 1. Optimistic local state update and storage sync
     setPostsState((prev) => {
       const filtered = prev.filter((item) => item.id !== id);
       safeStorageSet(STORAGE_KEYS.POSTS, JSON.stringify(filtered));
       return filtered;
     });
 
-    // 3. Clear selectedPost if it was the deleted post
+    // 2. Clear selectedPost if it was the deleted post
     setSelectedPost((curr) => (curr?.id === id ? null : curr));
 
-    // 4. Close editor if editing this deleted post
+    // 3. Close editor if editing this deleted post
     if (editingPost?.id === id) {
       closePostEditor();
     }
 
-    // 5. Delete in Firestore
+    // 4. Delete directly in Firestore
     safeFirestoreWrite(async (db, fs) => {
       const docRef = fs.doc(db, 'posts', id);
       await fs.deleteDoc(docRef);

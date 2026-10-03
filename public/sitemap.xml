@@ -15,73 +15,7 @@
     </image:image>
   </url>
 
-  <!-- Community Individual Posts (9 entries) -->
-
-  <url>
-    <loc>https://oasis46.com/?post=post-1</loc>
-    <lastmod>2026-08-25</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-    <image:image>
-      <image:loc>https://images.unsplash.com/photo-1511193311914-0346f16efe90?auto=format&amp;fm=webp&amp;fit=crop&amp;w=600&amp;q=75&amp;ext=.webp</image:loc>
-      <image:title>[필독] 오아시스 공식 에이전트 2026년 VIP 멤버십 혜택 &amp; 안전 이용 수칙 안내</image:title>
-    </image:image>
-  </url>
-
-  <url>
-    <loc>https://oasis46.com/?post=post-2</loc>
-    <lastmod>2026-08-20</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-    <image:image>
-      <image:loc>https://images.unsplash.com/photo-1578683010236-d716f9a3f461?auto=format&amp;fm=webp&amp;fit=crop&amp;w=600&amp;q=75&amp;ext=.webp</image:loc>
-      <image:title>2026 가을시즌 마닐라 오카다 &amp; 솔레어 스위트룸 3박 무료 바우처 특별 프로모션</image:title>
-    </image:image>
-  </url>
-
-  <url>
-    <loc>https://oasis46.com/?post=post-3</loc>
-    <lastmod>2026-08-15</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-    <image:image>
-      <image:loc>https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&amp;fm=webp&amp;fit=crop&amp;w=600&amp;q=75&amp;ext=.webp</image:loc>
-      <image:title>클락 한 카지노 리조트(Hann Casino) 신규 VIP 프라이빗 살롱 확장 오픈 안내</image:title>
-    </image:image>
-  </url>
-
-  <url>
-    <loc>https://oasis46.com/?post=post-4</loc>
-    <lastmod>2026-08-10</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-    <image:image>
-      <image:loc>https://images.unsplash.com/photo-1436491865332-7a61a109cc05?auto=format&amp;fm=webp&amp;fit=crop&amp;w=600&amp;q=75&amp;ext=.webp</image:loc>
-      <image:title>2026년 최신 필리핀 입국 가이드: e-Travel 사전 등록 및 여권 유효기간 체크리스트</image:title>
-    </image:image>
-  </url>
-
-  <url>
-    <loc>https://oasis46.com/?post=post-5</loc>
-    <lastmod>2026-08-05</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-    <image:image>
-      <image:loc>https://images.unsplash.com/photo-1550966871-3ed3cdb5ed0c?auto=format&amp;fm=webp&amp;fit=crop&amp;w=600&amp;q=75&amp;ext=.webp</image:loc>
-      <image:title>마닐라 BGC(보니파시오) 최고급 파인다이닝 &amp; 루프탑 라운지 BEST 5</image:title>
-    </image:image>
-  </url>
-
-  <url>
-    <loc>https://oasis46.com/?post=post-6</loc>
-    <lastmod>2026-07-28</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-    <image:image>
-      <image:loc>https://images.unsplash.com/photo-1549399542-7e3f8b79c341?auto=format&amp;fm=webp&amp;fit=crop&amp;w=600&amp;q=75&amp;ext=.webp</image:loc>
-      <image:title>마닐라 &amp; 클락 공항 24시간 VIP 의전 픽업 및 전용 리무진 서비스 안내</image:title>
-    </image:image>
-  </url>
+  <!-- Community Individual Posts (2 entries) -->
 
   <url>
     <loc>https://oasis46.com/?post=post-7</loc>
@@ -102,17 +36,6 @@
     <image:image>
       <image:loc>https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?auto=format&amp;fm=webp&amp;fit=crop&amp;w=600&amp;q=75&amp;ext=.webp</image:loc>
       <image:title>[VIP 투어] 클락 한 카지노 리조트(Hann) &amp; 스위소텔 최상급 럭셔리 스테이 가이드</image:title>
-    </image:image>
-  </url>
-
-  <url>
-    <loc>https://oasis46.com/?post=post-9</loc>
-    <lastmod>2026-06-20</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-    <image:image>
-      <image:loc>https://images.unsplash.com/photo-1563986768609-322da13575f3?auto=format&amp;fm=webp&amp;fit=crop&amp;w=600&amp;q=75&amp;ext=.webp</image:loc>
-      <image:title>오아시스 공식 24시간 프라이빗 텔레그램 채널 보안 인증 절차 안내</image:title>
     </image:image>
   </url>
 </urlset>
